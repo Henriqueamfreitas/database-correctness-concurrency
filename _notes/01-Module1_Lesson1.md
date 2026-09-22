@@ -8,6 +8,8 @@ to avoid cuncurrency, you must implement uniqueness in your table creation
 4. if can only be one appointment per schedule
 
 
+
+
 5. Why was Request B able to see 0 even though Request A was also trying to reserve the slot?
   a has not ommited an appointment that b can see
 
