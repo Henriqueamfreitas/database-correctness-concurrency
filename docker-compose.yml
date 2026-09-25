@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: database-correctness-postgres
+    environment:
+      POSTGRES_USER: course
+      POSTGRES_PASSWORD: course
+      POSTGRES_DB: concurrency_course
+    ports:
+      - "55432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
