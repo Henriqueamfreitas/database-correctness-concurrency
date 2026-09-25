@@ -1,0 +1,1 @@
+docker exec -it database-correctness-postgres psql -U course -d concurrency_course
