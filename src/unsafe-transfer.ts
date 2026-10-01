@@ -10,11 +10,14 @@ const pool = new Pool({
 
 async function transfer() {
   // 1. Debit R$100 from account 1.
+  await pool.query('update accounts set balance  = balance - 100 where id = 1 and balance > 100')
 
   // 2. Force an error HERE.
   //    The program must stop before crediting account 2.
+  throw new Error('Forced error to simulate failure before crediting account 2')
 
   // 3. Credit R$100 to account 2.
+  await pool.query('update accounts set balance  = balance + 100 where id = 2')
 }
 
 async function main() {
@@ -28,3 +31,43 @@ async function main() {
 }
 
 main()
+
+// Prediction:
+// Account 1 = 400
+// Account 2 = 200
+// Total money = 600
+
+// concurrency_course=# SELECT * FROM ACCOUNTS;
+//  id | balance 
+// ----+---------
+//   1 |     500
+//   2 |     200
+// (2 rows)
+
+// concurrency_course=# SELECT * FROM ACCOUNTS;
+//  id | balance 
+// ----+---------
+//   2 |     200
+//   1 |     400
+// (2 rows)
+
+
+
+  // try {
+
+    // 1. Debit R$100 from account 1.
+    // '''update accounts set balance  = balance - 100 where id = 1 and balance > 100'''
+    
+    // 2. Force an error HERE.
+    //    The program must stop before crediting account 2.
+    // if rowsaffected === 0 {
+    //   throw new Error('Insufficient funds')
+    // }
+
+    // 3. Credit R$100 to account 2.
+    // '''update accounts set balance  = balance + 100 where id = 2'''
+  // } catch (error) {
+  //   connection.rollback()
+  // } finally {
+  //   connection.release()
+  // }
