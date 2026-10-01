@@ -7,15 +7,7 @@
 
 import { Pool } from 'pg'
 
-const pool = new Pool({
-  host: '127.0.0.1',
-  port: 55432,
-  user: 'course',
-  password: 'course',
-  database: 'concurrency_course',
-})
-
-const transfer = async () => {
+export const transfer = async (pool: Pool) => {
   const client = await pool.connect()
 
   try {
@@ -29,7 +21,7 @@ const transfer = async () => {
         ;
     `)
     if (debit.rowCount !== 1) {
-      throw new Error('Insuficient funds in account 1')
+      throw new Error('Insufficient funds in account 1')
     }
 
     // throw new Error('Forced error to simulate failure before crediting account 2')
@@ -45,7 +37,7 @@ const transfer = async () => {
       throw new Error('Error in account 2')
     }
     await client.query('COMMIT;')
-  } catch (error: any) {
+  } catch (error) {
     await client.query('ROLLBACK;')
     throw error
 
@@ -54,14 +46,14 @@ const transfer = async () => {
   }
 }
 
-const main = async () => {
-  try {
-    await transfer()
-  } catch (error) {
-    console.log('Error:', error)
-  }
-}
-main()
+// const main = async () => {
+//   try {
+//     await transfer(pool)
+//   } catch (error) {
+//     console.log('Error:', error)
+//   }
+// }
+// // main()
 
 // After forced error:
 
