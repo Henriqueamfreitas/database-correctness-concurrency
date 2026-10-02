@@ -74,3 +74,4 @@ describe('Account Transfer', () => {
     expect(finalCreditBalance + finalDebitBalance).toBe(700)
   })
 })
+
