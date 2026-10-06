@@ -42,3 +42,21 @@ CREATE TABLE appointments (
 
 ADD CONSTRAINT nameOfConstraint appointments id PRIMARY KEY;
 ADD CONSTRAINT nameOfConstraint appointments unique (hospital_id,appointment_date,appointment_time);
+
+
+REQUEST A COMPLETES B CHECKS -> WHEN B CHECKS, IT DOES NOT ALLOW THE APPOINTMENT -- CORRECT
+REQUEST B COMPLETES A CHECKS -> WHEN A CHECKS, IT DOES NOT ALLOW THE APPOINTMENT -- CORRECT
+
+REQUEST B DOES NOT COMPLETE -> A CHECKS -> WHEN A CHECKS, IT ALLOWS THE APPOINTMENT -- INCORRECT -- 2 APPOOINTMENTS FOR THE SAME TIME ... SAME FOR A 
+
+A. At what point does each request decide that it may insert?
+WHEN IT REACHES THE DATABASE AND CHECKS IF THERE IS ALREADY AN APOINTMENT
+
+B. What does Request A know after its SELECT?
+IF AT THE TIME IT CHECKS, THE SPOT IS AVAILABLE OR NOT
+
+C. What can change in the database between A's SELECT and A's INSERT?
+B CAN OCCUPIES THE SPOT
+
+D. What invariant could be violated?
+UNIQUENESS
