@@ -125,3 +125,41 @@ yes, because it can only debit if you have enough funds
 5. Username:
    Create a user only if no other user has the same username.
 no. this is uniqueness in the database and its a business rule protectedbby the database
+
+
+
+
+
+
+
+
+1. Why did appointment booking naturally fit a UNIQUE constraint,
+   while inventory decrement needed an atomic conditional UPDATE?
+becasue for the first ine, you need to validate other rows to insert or update an appointment. for the second, you just need to validate the value being inserted/updated
+
+2. If this statement:
+
+   UPDATE products
+   SET stock = stock - 1
+   WHERE id = 1
+     AND stock >= 1
+   RETURNING stock;
+
+   affects 0 rows, what does that mean?
+   Is it necessarily an SQL/database error?
+it means that either the product_id 1 doesnt exist or the stock is smaller than 1. its not an error
+
+3. Why is this unsafe:
+
+   SELECT stock
+   → validate in Node
+   → UPDATE stock
+
+   even if all three steps happen very quickly?
+because, even if happens very quiclky, it still can miss some update in the value a long the way
+
+
+4. Would wrapping that original SELECT → validate → UPDATE
+   sequence in a normal transaction automatically make it safe?
+   Why or why not?
+no. also, since its just a select, you do not need the transaction. but, more important than this is that, wraping them up in a trransaction only ensures that both queries happens only if both runs successfully, but it does not ensure that it wont be affected by other requests
