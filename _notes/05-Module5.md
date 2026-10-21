@@ -93,3 +93,87 @@ safe, because you probably need to hold the current value of the select for the 
    UPDATE ...
    COMMIT
    i acctualy don know the differnece... for me, both of them are safe
+
+
+
+
+1. What exactly does SELECT ... FOR UPDATE do?
+it locks thw selected value for that row, in way that any updates from other requests in this row will have to wait for this transactin to be completed to complete itself 
+
+2. Does SELECT ... FOR UPDATE change the row's data?
+no, it does not. it just kind reserve the rows for you until you release it
+
+3. If Transaction A holds a FOR UPDATE lock on room 1,
+   what happens when Transaction B tries:
+   a) a normal SELECT on room 1?
+   it happends normally
+   b) another SELECT ... FOR UPDATE on room 1?
+   it will wait the transaction a to bem completed
+   c) an UPDATE on room 1?
+   it will wait the transaction a to bem completed
+
+4. How long does the row lock remain held?
+until the transaction that uses select for update is complete (rollback or commit)
+
+5. Why can pessimistic locking reduce throughput?
+im not entirely sure on what is throughput, but i think it has something to do with latency and it can increace its value
+Analogy: a supermarket checkout. Latency is how long you wait to pay. Throughput is how many customers the cashier can process per hour.
+Pessimistic locking can reduce throughput because conflicting transactions must wait instead of progressing concurrently, so fewer operations may complete per unit of time.
+
+6. Why is this usually dangerous?
+
+   BEGIN
+   SELECT ... FOR UPDATE
+   call external API for 5 seconds
+   UPDATE ...
+   COMMIT
+because you lock the row for at least 5 seconds
+
+7. When would you prefer this:
+
+   UPDATE products
+   SET stock = stock - 1
+   WHERE id = $1
+     AND stock >= 1
+   RETURNING stock;
+
+   instead of:
+
+   BEGIN
+   SELECT ... FOR UPDATE
+   ...
+   UPDATE ...
+   COMMIT;
+
+   when the conditions on where to update are easy to express in a where clause
+
+8. In our room reservation example, why did we lock the
+   rooms row rather than room_reservations?
+   because its the room info that really matters... the other is just like a log info... you can see who tried to reserve the room, but do not necessairly got it
+   We lock the rooms row because the booking decision depends on that room’s current available state. The reservation row does not exist yet and is created only after the protected decision succeeds
+
+
+UNIQUE constraint
+atomic conditional UPDATE
+transaction
+SELECT ... FOR UPDATE
+
+A. Username must be unique across users. 
+UNIQUE constraint
+
+B. Decrement stock only if enough stock remains. 
+atomic conditional UPDATE, because the condiotion to update is simple
+
+C. Read room availability, insert a reservation,
+   update another dependent table, then mark room unavailable.
+transaction
+SELECT ... FOR UPDATE because you need to also update another dependent table
+
+D. Transfer money:
+   debit account A and credit account B as one unit.
+transaction and SELECT ... FOR UPDATE.
+you need transaction because you want to complete the transaction only if everything happened correctly. also, ou must ensure account a has enough money. i chose select for update instead of conditional because maybe it has enough funds for this transaction but a seconed request is also debiting money from it that has enough money for it, but not for them combined.
+
+E. Prevent two workers from modifying the same mutable row
+   while a multi-step decision is being made.
+select for update
