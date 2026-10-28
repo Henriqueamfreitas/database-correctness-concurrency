@@ -19,3 +19,4 @@ No, postgres needs to inervene on it
 
 
 If Session A always locks row 1 before row 2, and Session B also always locks row 1 before row 2, why does that greatly reduce the chance of a deadlock?
+Because you try to grab the first key before even staring any update... basically, yougrab the key for row 2, then grabs key for row 1, enter it and then enters row 2 with the key you already grabbed
