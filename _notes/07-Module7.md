@@ -83,3 +83,41 @@ for (let attempt = 1; attempt <= 3; attempt++) {
 }
 Why is it important that a non-deadlock error is thrown immediately instead of being retried too?
 because we did not consider other error cases and not all of them (acctually, very few of them) have to be retried
+
+
+
+
+
+Module 7 review
+Before we close the module, answer these six questions without looking back:
+1. What is the difference between blocking and a deadlock?
+   blocking is when a request has to wait for another one to complete because they are trying to alter the same value. deadlock is when request a is holidng row 1 and wanting to alter row 2 and request b is holding row 2 and wanting to alter row 1
+
+2. What exact condition turns ordinary waiting into a deadlock?
+   i understood that this was a solution.... you create the rule to always lock the row by the lowest id. 
+
+3. Why does consistent lock ordering reduce deadlocks?
+   because by ordering the ids, all requets have a urle to update avoiding conccurent requests to lock each other
+
+4. When PostgreSQL detects a deadlock, what does it do?
+   it selects one to proceed and cancel the other
+
+5. What does SQLSTATE 40P01 represent, and why should the application check the code instead of the message?
+   it represents a deadlock... it should check the code because its less likely to be updated then the message
+6. Classify each one:
+
+40P01 deadlock
+→ retry or no retry?
+   retry because it will not have more deadlocks (i mean, it can have, but it will be with a different request)
+
+40001 serialization failure
+→ retry or no retry?
+   retry, becauise then you canget a new snapshot
+
+23505 unique violation
+→ retry or no retry?
+no retry. it will cotninue to fail no matter how many times you try
+
+validation failure
+→ retry or no retry?
+no retry. it will cotninue to fail no matter how many times you try
